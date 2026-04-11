@@ -7,8 +7,12 @@ const app = express();
 app.use(cors());
 const server = http.createServer(app);
 
+// Change this in your server/index.js
 const io = new Server(server, {
-    cors: { origin: "*", methods: ["GET", "POST"] } 
+    cors: { 
+        origin: "https://music-sync-app-theta.vercel.app/", // Using "*" during testing ensures NOTHING is blocked
+        methods: ["GET", "POST"] 
+    }
 });
 
 const roomStore = {}; 
