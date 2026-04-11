@@ -36,14 +36,18 @@ function App() {
     });
 
     socket.on("receive_control", (data) => {
-      if (audioRef.current) {
-        if (data.action === "play") audioRef.current.play().catch(() => {});
-        else if (data.action === "pause") audioRef.current.pause();
-        if (Math.abs(audioRef.current.currentTime - data.currentTime) > 1) {
-          audioRef.current.currentTime = data.currentTime;
-        }
-      }
-    });
+  if (audioRef.current) {
+    if (data.action === "play" && audioRef.current.paused) {
+      audioRef.current.play().catch(() => {});
+    } else if (data.action === "pause" && !audioRef.current.paused) {
+      audioRef.current.pause();
+    }
+    
+    if (Math.abs(audioRef.current.currentTime - data.currentTime) > 2) {
+      audioRef.current.currentTime = data.currentTime;
+    }
+  }
+});
 
     return () => {
       socket.off("update_song");
@@ -78,11 +82,15 @@ function App() {
     setAudioSrc(null);
   };
 
-  const emitControl = (action) => {
-    if (audioRef.current && room) {
-      socket.emit("send_control", { room, action, currentTime: audioRef.current.currentTime });
-    }
-  };
+ const emitControl = (action) => {
+  if (audioRef.current && room) {
+    socket.emit("send_control", { 
+      room, 
+      action, 
+      currentTime: audioRef.current.currentTime 
+    });
+  }
+};
 
   const uploadToCloud = async (e) => {
     const file = e.target.files[0];
@@ -107,12 +115,15 @@ function App() {
     } catch (err) { alert("Upload failed"); } finally { setLoading(false); }
   };
 
-  const sendMessage = () => {
-    if (message.trim()) {
-      socket.emit("send_message", { room, author: user.name || "User", text: message });
-      setMessage("");
-    }
-  };
+ const sendMessage = () => {
+  if (message.trim()) {
+    const msgData = { room, author: user.name || "User", text: message };
+    setChatLog((prev) => [...prev, msgData]);
+    socket.emit("send_message", msgData);
+    
+    setMessage("");
+  }
+};
 
   const styles = {
     container: { backgroundColor: '#121212', color: 'white', minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '20px', fontFamily: 'sans-serif' },
