@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import io from 'socket.io-client';
 
-const socket = io.connect("http://localhost:5000");
+// Replace this at the top of App.jsx
+const socket = io.connect("https://music-sync-app-xzzx.onrender.com");
 
 function App() {
   const [step, setStep] = useState(1); 
