@@ -41,3 +41,18 @@ SyncTune/
 │   └── Node.js + Socket.IO backend
 │
 └── README.md
+How to Run
+Frontend
+    cd client
+    npm install
+    npm run dev
+Backend
+    cd server
+    npm install
+    node server.js
+
+The frontend runs on:
+http://localhost:5173
+
+The backend runs on:
+http://localhost:5000
